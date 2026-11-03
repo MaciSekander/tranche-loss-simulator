@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Tranche Loss Simulator
 
-## Getting Started
+An interactive tool for GPU-backed structured credit. Set a deal size, shape the capital stack, choose which tranche a residual value guarantee (RVG) covers, then stress the collateral and see who absorbs the loss.
 
-First, run the development server:
+Built with Next.js, Tailwind CSS and shadcn/ui.
+
+## What it shows
+
+- **Capital stack after losses:** a to-scale tower and a waterfall table with each tranche's attachment and detachment points, break-even loss, gross loss, guarantee payments, net loss and status.
+- **Who pays the loss:** a stacked area chart of the dollars absorbed by each layer, including the guarantor, as collateral loss rises from 0% to 100%.
+- **Headline figures:** collateral loss, guarantor payments against the cap, senior loss and senior break-even.
+- **Model notes:** what the current scenario assumes, how the waterfall works, and what the model leaves out.
+
+You can rename, add, remove and reorder tranches (up to six), name the guarantor, and size the guarantee as a percentage of the whole deal or of the covered tranche. **Copy summary** puts a plain-text table of the scenario on the clipboard. The browser remembers your last scenario.
+
+## How the model works
+
+1. Collateral loss = loss % × deal size.
+2. Losses fill tranches from the most junior upward. Each tranche absorbs losses between its attachment and detachment points.
+3. If a guarantee covers a tranche, losses landing on that tranche are paid by the guarantor first, up to the cap. The guarantor pays nothing for losses below or above that tranche.
+4. **Break-even** is the collateral loss at which a tranche's investors first lose money. For the covered tranche it moves up by the size of the guarantee.
+
+The model is a strict sequential waterfall at a single point in time: no pro rata sharing, coverage tests, recoveries, coupons or amortization.
+
+## Run it locally
+
+Requires Node.js 22.6 or later.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev     # http://localhost:3000
+npm test        # waterfall unit tests
+npm run build   # production build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Project layout
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+lib/waterfall.ts            The model: waterfall, guarantee cap, break-even, who-pays sweep
+lib/waterfall.test.ts       Unit tests (node:test)
+lib/format.ts               Money and percent formatting, plain-text summary
+components/simulator/       Inputs panel, KPIs, capital stack, who-pays chart, model notes
+components/ui/              shadcn/ui components
+app/                        Next.js App Router page, layout, theme and self-hosted IBM Plex fonts
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The model in `lib/waterfall.ts` has no React dependencies, so it can be reused or extended on its own.
 
-## Learn More
+## Next steps
 
-To learn more about Next.js, take a look at the following resources:
+- **Pricing:** add a spread per tranche and show loss-adjusted yield.
+- **GPU residual value:** drive collateral loss from a GPU rental price path (H100, B200, GB300) instead of a direct input.
+- **Timing:** model cash flows and amortization over the life of the deal.
+- **Probability of loss:** Monte Carlo over loss scenarios for expected loss and probability of impairment by tranche.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Credits
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+IBM Plex fonts are licensed under the SIL Open Font License; see `app/fonts/OFL.txt`.
