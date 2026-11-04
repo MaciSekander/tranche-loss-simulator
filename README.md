@@ -1,8 +1,17 @@
 # Tranche Loss Simulator
 
+[![CI](https://github.com/MaciSekander/tranche-loss-simulator/actions/workflows/ci.yml/badge.svg)](https://github.com/MaciSekander/tranche-loss-simulator/actions/workflows/ci.yml)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6)
+![Next.js](https://img.shields.io/badge/Next.js-16-black)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
+**Live demo: https://tranche-loss-simulator.vercel.app**
+
 An interactive tool for GPU-backed structured credit. Set a deal size, shape the capital stack, choose which tranche a residual value guarantee (RVG) covers, then stress the collateral and see who absorbs the loss.
 
 Built with Next.js, Tailwind CSS and shadcn/ui.
+
+![Tranche Loss Simulator](docs/screenshot.png)
 
 ## What it shows
 
@@ -52,6 +61,10 @@ The model in `lib/waterfall.ts` has no React dependencies, so it can be reused o
 - **GPU residual value:** drive collateral loss from a GPU rental price path (H100, B200, GB300) instead of a direct input.
 - **Timing:** model cash flows and amortization over the life of the deal.
 - **Probability of loss:** Monte Carlo over loss scenarios for expected loss and probability of impairment by tranche.
+
+## License
+
+[MIT](LICENSE) © Maci Sekander
 
 ## Credits
 
